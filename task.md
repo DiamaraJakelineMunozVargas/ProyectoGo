@@ -1,0 +1,11 @@
+- inicializar servidor web (fiber)
+- de una plantilla de docker compose que cree el entorno para el nuevo servicio "docker compose"
+- que al crear un nuevo cliente cree todo el entorno necesario. (crear carpetas, crear el compose)
+  - /Symphony/{nombre_cliente}/DCM
+  - /Symphony/{nombre_cliente}/MYSQL
+  - /Symphony/{nombre_cliente}/MONGO
+  - /Symphony/{nombre_cliente}/INF
+  - /Symphony/{nombre_cliente}/KVSTORE
+  - /MedicareSoft/{nombre_cliente}/App
+  - /MedicareSoft/{nombre_cliente}/compose.yml (aca debe ir la platilla del compose)
+- tener la capacidad de para los servios docker reiniciarlos y iniciarlos y ver logs
