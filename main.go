@@ -1,50 +1,85 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
-func main() {
-	//Crer la app de Fiber
-	/*app := fiber.New()
-	app.Use(LogginMiddleware)
+func crearEntornoCliente(nombre string) error {
+	// 1. Nombrar carpetasss
+	carpetas := []string{
+		filepath.Join("Symphony", nombre, "DCM"),
+		filepath.Join("Symphony", nombre, "MYSQL"),
+		filepath.Join("Symphony", nombre, "MONGO"),
+		filepath.Join("MedicareSoft", nombre, "App"),
+	}
 
-	log.Fatal(app.Listen(":8080"))*/
-	// Crear la instancia de Fiber v2
+	//Crear carpetasddd
+	for _, ruta := range carpetas {
+		if err := os.MkdirAll(ruta, 0755); err != nil {
+			return err
+		}
+	}
+
+	// Plantilla del Docker Compose
+	contenido := fmt.Sprintf(`version: '3.8'
+services:
+  db-%s:
+    image: mysql:8.0
+    container_name: mysql-%s
+    volumes:
+      - ../../Symphony/%s/MYSQL:/var/lib/mysql`, nombre, nombre, nombre)
+
+	// 4. Escribir el archivo
+	rutaArchivo := filepath.Join("MedicareSoft", nombre, "compose.yml")
+	return os.WriteFile(rutaArchivo, []byte(contenido), 0644)
+}
+
+func main() {
 	app := fiber.New()
 
 	// Middlewares
+	app.Use(logger.New())
+	app.Use(recover.New())
 
-	app.Use(logger.New())  // Para ver quién entra en la terminal
-	app.Use(recover.New()) // Para que el servidor no se caiga si hay un error
-
-	// Ruta de prueba
+	// Ruta 1: Inicio
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hola mundo")
+		return c.SendString("Servidor de Gestión MedicareSoft Inicializado 🚀")
 	})
 
-	// segunda Ruta revision
+	// Ruta 2
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"status": "UP"})
 	})
 
-	//Configuración del puerto
+	// NUEVA RUTA: Crear cliente (Ejemplo: localhost:8080/crear/Juan)
+	app.Get("/crear/:nombre", func(c *fiber.Ctx) error {
+		nombre := c.Params("nombre")
+
+		err := crearEntornoCliente(nombre)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": "No se pudo crear el entorno",
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"mensaje": "¡Entorno de " + nombre + " creado con éxito!",
+		})
+	})
+
+	// Configuración del puerto000
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	// Encender el servidor
 	log.Printf("Iniciando servidor en el puerto %s...", port)
 	log.Fatal(app.Listen(":" + port))
 }
-
-// func LogginMiddleware(c *fiber.Ctx) error {
-// 	log.Printf("Solicitud recibida: %s %s ", c.Method(), c.Path())
-// 	return c.Next()
-// }
