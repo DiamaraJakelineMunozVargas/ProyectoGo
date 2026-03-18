@@ -17,6 +17,8 @@ func crearEntornoCliente(nombre string) error {
 		filepath.Join("Symphony", nombre, "DCM"),
 		filepath.Join("Symphony", nombre, "MYSQL"),
 		filepath.Join("Symphony", nombre, "MONGO"),
+		filepath.Join("Symphony", nombre, "INF"),
+		filepath.Join("Symphony", nombre, "KVSTORE"),
 		filepath.Join("MedicareSoft", nombre, "App"),
 	}
 

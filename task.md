@@ -9,3 +9,7 @@
   - /MedicareSoft/{nombre_cliente}/App
   - /MedicareSoft/{nombre_cliente}/compose.yml (aca debe ir la platilla del compose)
 - tener la capacidad de para los servios docker reiniciarlos y iniciarlos y ver logs
+
+-- el compose debe estar en un archivo separado para poder ser modificado en el tiempo
+- mover el servidor web a un nuevo modulo
+- 

@@ -1,0 +1,88 @@
+networks:
+  SymphonyNet:
+
+volumes:
+  DCM:
+  INFORMS:
+  MYSQL:
+  MONGO:
+  APP:
+  
+services:
+
+  mysql:
+    image: jose244/symphonypacsmysql:1.0.1
+    restart: always
+    ports:
+      - 127.0.0.1:${MYSQL_PORT}:3306
+    container_name: ${HOSPITAL_NAME}_SYMPHONYMYSQL
+    networks:
+      SymphonyNet:
+        aliases:
+          - symphonymysql
+    volumes:
+      - MYSQL:/var/lib/mysql
+
+  mongo:
+    image: jose244/symphonypacsmongo:2.0.0
+    restart: always
+    ports:
+      - 127.0.0.1:${MONGO_PORT}:27017
+    container_name: ${HOSPITAL_NAME}_SYMPHONYMONGO
+    networks:
+      SymphonyNet:
+        aliases:
+          - symphonymongo
+    volumes:
+      - MONGO:/data/db
+
+  engine:
+    image: jose244/symphonypacsengine:1.0.2
+    restart: always
+    ports:
+      - ${DICOM_PORT}:3101
+      - ${HTTP_PORT}:8042
+    container_name: ${HOSPITAL_NAME}_SYMPHONYENGINE
+    networks:
+      SymphonyNet:
+        aliases:
+          - symphonyengine
+    volumes:
+      - DCM:/var/lib/orthanc/db-v6
+    depends_on:
+      - mysql
+      - mongo
+
+  db2db:
+    image: jose244/symphonypacsdb2db:2.0.0
+    restart: always
+    container_name: ${HOSPITAL_NAME}_SYMPHONYDB2DB
+    networks:
+      SymphonyNet:
+        aliases:
+          - symphonydb2db
+    volumes:
+      - DCM:/Symphony/Files
+    depends_on:
+      - engine
+      - mongo
+      - mysql
+
+  app:
+    image: jose244/symphonypacsapp:1.0.1
+    restart: always
+    ports:
+      - ${APP_PORT}:4000
+    container_name: ${HOSPITAL_NAME}_SYMPHONYAPP
+    networks:
+      SymphonyNet:
+        aliases:
+          - symphonyapp
+    volumes:
+      - DCM:/Symphony/Files
+      - APP:/MedicareSoft
+    depends_on:
+      - engine
+      - mongo
+      - mysql
+    command: "sh start.sh"
