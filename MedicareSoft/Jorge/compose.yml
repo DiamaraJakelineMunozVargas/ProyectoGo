@@ -1,21 +1,23 @@
 networks:
   SymphonyNet:
 
+
 volumes:
   DCM:
   INFORMS:
   MYSQL:
   MONGO:
   APP:
-  
+
+
 services:
 
   mysql:
     image: jose244/symphonypacsmysql:1.0.1
     restart: always
     ports:
-      - 127.0.0.1:${MYSQL_PORT}:3306
-    container_name: Diana_SYMPHONYMYSQL
+      - 127.0.0.1:3307:3306
+    container_name: Jorge_SYMPHONYMYSQL
     networks:
       SymphonyNet:
         aliases:
@@ -27,8 +29,8 @@ services:
     image: jose244/symphonypacsmongo:2.0.0
     restart: always
     ports:
-      - 127.0.0.1:${MONGO_PORT}:27017
-    container_name: Diana_SYMPHONYMONGO
+      - 127.0.0.1:27018:27017
+    container_name: Jorge_SYMPHONYMONGO
     networks:
       SymphonyNet:
         aliases:
@@ -40,9 +42,9 @@ services:
     image: jose244/symphonypacsengine:1.0.2
     restart: always
     ports:
-      - ${DICOM_PORT}:3101
-      - ${HTTP_PORT}:8042
-    container_name: Diana_SYMPHONYENGINE
+      - 3102:3101
+      - 8043:8042
+    container_name: Jorge_SYMPHONYENGINE
     networks:
       SymphonyNet:
         aliases:
@@ -56,7 +58,7 @@ services:
   db2db:
     image: jose244/symphonypacsdb2db:2.0.0
     restart: always
-    container_name: Diana_SYMPHONYDB2DB
+    container_name: Jorge_SYMPHONYDB2DB
     networks:
       SymphonyNet:
         aliases:
@@ -72,8 +74,8 @@ services:
     image: jose244/symphonypacsapp:1.0.1
     restart: always
     ports:
-      - ${APP_PORT}:4000
-    container_name: Diana_SYMPHONYAPP
+      - 4001:4000
+    container_name: Jorge_SYMPHONYAPP
     networks:
       SymphonyNet:
         aliases:

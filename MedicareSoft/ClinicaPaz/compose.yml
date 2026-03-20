@@ -17,7 +17,7 @@ services:
     restart: always
     ports:
       - 127.0.0.1:3307:3306
-    container_name: Juan_SYMPHONYMYSQL
+    container_name: ClinicaPaz_SYMPHONYMYSQL
     networks:
       SymphonyNet:
         aliases:
@@ -30,7 +30,7 @@ services:
     restart: always
     ports:
       - 127.0.0.1:27018:27017
-    container_name: Juan_SYMPHONYMONGO
+    container_name: ClinicaPaz_SYMPHONYMONGO
     networks:
       SymphonyNet:
         aliases:
@@ -44,7 +44,7 @@ services:
     ports:
       - 3102:3101
       - 8043:8042
-    container_name: Juan_SYMPHONYENGINE
+    container_name: ClinicaPaz_SYMPHONYENGINE
     networks:
       SymphonyNet:
         aliases:
@@ -58,7 +58,7 @@ services:
   db2db:
     image: jose244/symphonypacsdb2db:2.0.0
     restart: always
-    container_name: Juan_SYMPHONYDB2DB
+    container_name: ClinicaPaz_SYMPHONYDB2DB
     networks:
       SymphonyNet:
         aliases:
@@ -75,7 +75,7 @@ services:
     restart: always
     ports:
       - 4001:4000
-    container_name: Juan_SYMPHONYAPP
+    container_name: ClinicaPaz_SYMPHONYAPP
     networks:
       SymphonyNet:
         aliases:

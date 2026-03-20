@@ -5,6 +5,7 @@ import (
 	// "log"
 
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -17,6 +18,7 @@ import (
 func Inicio() {
 	app := fiber.New()
 	app.Post("/crearcliente", func(c *fiber.Ctx) error {
+		//Convierte el JSON que llega en un struct de Go.
 		type Cliente struct {
 			Nombre    string `json:"nombre"`
 			MysqlPort int    `json:"mysql_port"`
@@ -45,7 +47,14 @@ func Inicio() {
 		nuevoContent = strings.ReplaceAll(nuevoContent, "${APP_PORT}", strconv.Itoa(cliente.AppPort))
 
 		// lo guarda
-		rutadestino := filepath.Join("/MedicareSoft", cliente.Nombre, "compose.yml")
+		// obtener prefijo
+		// prefijo := "/"
+		// if os.Getenv("APP_ENV") == "desarrollo" {
+		// 	prefijo = ""
+		// }
+		rutadestino := filepath.Join(obtenerPrefijo(), "MedicareSoft", cliente.Nombre, "compose.yml")
+
+		//rutadestino := filepath.Join("/MedicareSoft", cliente.Nombre, "compose.yml")
 		err = os.WriteFile(rutadestino, []byte(nuevoContent), 0644)
 		if err != nil {
 			return c.Status(500).SendString("Error al crear el compose.yml")
@@ -55,19 +64,79 @@ func Inicio() {
 	app.Listen(":8080")
 
 }
+
 func crearEntornoCliente(nombre string) {
+
 	carpetas := []string{
-		filepath.Join("/Symphony", nombre, "DCM"),
-		filepath.Join("/Symphony", nombre, "MYSQL"),
-		filepath.Join("/Symphony", nombre, "MONGO"),
-		filepath.Join("/Symphony", nombre, "INF"),
-		filepath.Join("/Symphony", nombre, "KVSTORE"),
-		filepath.Join("/MedicareSoft", nombre, "App"),
+		filepath.Join(obtenerPrefijo(), "Symphony", nombre, "DCM"),
+		filepath.Join(obtenerPrefijo(), "Symphony", nombre, "MYSQL"),
+		filepath.Join(obtenerPrefijo(), "Symphony", nombre, "MONGO"),
+		filepath.Join(obtenerPrefijo(), "Symphony", nombre, "INF"),
+		filepath.Join(obtenerPrefijo(), "Symphony", nombre, "KVSTORE"),
+		filepath.Join(obtenerPrefijo(), "MedicareSoft", nombre, "App"),
 	}
 
-	//Crear carpetasddd
 	for _, ruta := range carpetas {
 		os.MkdirAll(ruta, 0755)
-
 	}
 }
+func obtenerPrefijo() string {
+	// Si la variable no existe o esta en desarrollo, devolvemos vacío (carpeta local)
+	if os.Getenv("APP_ENV") == "produccion" {
+		return "/"
+	}
+	return ""
+}
+func gestionarDocker(accion string, nombre string) (string, error) {
+	// 1. Construimos la ruta al compose.yml del cliente usando tu lógica de prefijo
+	rutaCompose := filepath.Join(obtenerPrefijo(), "MedicareSoft", nombre, "compose.yml")
+
+	// Preparamos el comando según la acción
+	// Ejemplo: docker compose -f MedicareSoft/Juan/compose.yml up -d
+	var cmd *exec.Cmd
+	switch accion {
+	case "start":
+		cmd = exec.Command("docker", "compose", "-f", rutaCompose, "up", "-d")
+	case "stop":
+		cmd = exec.Command("docker", "compose", "-f", rutaCompose, "stop")
+	case "restart":
+		cmd = exec.Command("docker", "compose", "-f", rutaCompose, "restart")
+	case "logs":
+		cmd = exec.Command("docker", "compose", "-f", rutaCompose, "logs", "--tail=20")
+	default:
+		return "Acción no permitida", nil
+	}
+
+	// se Ejecuta  y captura la respuesta de la terminal
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+// comandos para la terminal
+// APP_ENV=desarrollo go run main.go
+// % curl -X POST http://localhost:8080/crearcliente \
+// -H "Content-Type: application/json" \
+// -d '{
+//   "nombre": "Jorge",
+//   "mysql_port": 3307,
+//   "mongo_port": 27018,
+//   "dicom_port": 3102,
+//   "http_port": 8043,
+//   "app_port": 4001}'
+
+// func crearEntornoCliente(nombre string) {
+// 	carpetas := []string{
+// 		filepath.Join("/Symphony", nombre, "DCM"),
+// 		filepath.Join("/Symphony", nombre, "MYSQL"),
+// 		filepath.Join("/Symphony", nombre, "MONGO"),
+// 		filepath.Join("/Symphony", nombre, "INF"),
+// 		filepath.Join("/Symphony", nombre, "KVSTORE"),
+// 		filepath.Join("/MedicareSoft", nombre, "App"),
+// 	}
+
+// 	//Crear carpetasddd
+// 	for _, ruta := range carpetas {
+// 		os.MkdirAll(ruta, 0755)
+
+// 	}
+// }
