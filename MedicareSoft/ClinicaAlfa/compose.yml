@@ -1,23 +1,21 @@
 networks:
   SymphonyNet:
 
-
 volumes:
   DCM:
   INFORMS:
   MYSQL:
   MONGO:
   APP:
-
-
+  
 services:
 
   mysql:
     image: jose244/symphonypacsmysql:1.0.1
     restart: always
     ports:
-      - 127.0.0.1:3307:3306
-    container_name: Jorge_SYMPHONYMYSQL
+      - 127.0.0.1:3306:3306
+    container_name: ClinicaAlfa_SYMPHONYMYSQL
     networks:
       SymphonyNet:
         aliases:
@@ -29,8 +27,8 @@ services:
     image: jose244/symphonypacsmongo:2.0.0
     restart: always
     ports:
-      - 127.0.0.1:27018:27017
-    container_name: Jorge_SYMPHONYMONGO
+      - 127.0.0.1:27017:27017
+    container_name: ClinicaAlfa_SYMPHONYMONGO
     networks:
       SymphonyNet:
         aliases:
@@ -42,9 +40,9 @@ services:
     image: jose244/symphonypacsengine:1.0.2
     restart: always
     ports:
-      - 3102:3101
-      - 8043:8042
-    container_name: Jorge_SYMPHONYENGINE
+      - 11112:3101
+      - 80:8042
+    container_name: ClinicaAlfa_SYMPHONYENGINE
     networks:
       SymphonyNet:
         aliases:
@@ -58,7 +56,7 @@ services:
   db2db:
     image: jose244/symphonypacsdb2db:2.0.0
     restart: always
-    container_name: Jorge_SYMPHONYDB2DB
+    container_name: ClinicaAlfa_SYMPHONYDB2DB
     networks:
       SymphonyNet:
         aliases:
@@ -74,8 +72,8 @@ services:
     image: jose244/symphonypacsapp:1.0.1
     restart: always
     ports:
-      - 4001:4000
-    container_name: Jorge_SYMPHONYAPP
+      - 3000:4000
+    container_name: ClinicaAlfa_SYMPHONYAPP
     networks:
       SymphonyNet:
         aliases:
