@@ -36,3 +36,21 @@ func Clientes(c *fiber.Ctx) error {
 	DB.Find(&todos)
 	return c.JSON(todos)
 }
+func ControlarDocker(c *fiber.Ctx) error {
+	nombre := c.Params("nombre")
+	accion := c.Params("accion")
+	output, err := GestionarDocker(accion, nombre)
+	if err != nil {
+		return c.Status(500).SendString("Error Docker: " + err.Error() + output)
+	}
+	return c.SendString("Operacion " + accion + "exitosa para " + nombre)
+}
+func VerLog(c *fiber.Ctx) error {
+	nombre := c.Params("nombre")
+	servicio := c.Params("servicio")
+	resultado, err := GestionarDocker(nombre, servicio)
+	if err != nil {
+		return c.Status(500).SendString("Error al ver el log" + resultado)
+	}
+	return c.SendString(resultado)
+}

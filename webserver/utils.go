@@ -87,7 +87,7 @@ func ObtenerPrefijo() string {
 	}
 	return ""
 }
-func GestionarDocker(accion string, nombre string) (string, error) {
+func GestionarDocker(accion string, nombre string, servicio ...string) (string, error) {
 	// Construimos la ruta al compose.yml del cliente usando tu lógica de prefijo
 	rutaCompose := filepath.Join(ObtenerPrefijo(), "MedicareSoft", nombre, "compose.yml")
 
@@ -102,7 +102,8 @@ func GestionarDocker(accion string, nombre string) (string, error) {
 	case "restart":
 		cmd = exec.Command("docker", "compose", "-f", rutaCompose, "restart")
 	case "logs":
-		cmd = exec.Command("docker", "compose", "-f", rutaCompose, "logs", "--tail=20")
+		ContainerName := nombre + "_" + servicio[0]
+		cmd = exec.Command("docker", "logs", "--tail", "100", ContainerName)
 	default:
 		return "Acción no permitida", nil
 	}

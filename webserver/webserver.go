@@ -16,6 +16,9 @@ func Inicio() {
 	// metodo get
 	app.Get("/clientes", Clientes)
 
+	app.Post("/docker/:nombre/:accion", ControlarDocker)
+	app.Get("/log/:nombre/:servicio", VerLog)
+
 	app.Listen(":8080")
 
 }
