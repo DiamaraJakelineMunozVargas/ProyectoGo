@@ -10,15 +10,9 @@ import (
 )
 
 func Inicio() {
-	ConexionDB() //se llama a la funcion donde esta la base de datos
 	app := fiber.New()
-	app.Post("/crearcliente", CrearCliente)
-	// metodo get
-	app.Get("/clientes", Clientes)
-
-	app.Post("/docker/:nombre/:accion", ControlarDocker)
-	app.Get("/log/:nombre/:servicio", VerLog)
-
+	api := app.Group("/api")
+	Router(api)
 	app.Listen(":8080")
 
 }

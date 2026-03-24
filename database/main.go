@@ -1,4 +1,4 @@
-package webserver
+package database
 
 import (
 	"gorm.io/driver/sqlite"

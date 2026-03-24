@@ -6,16 +6,18 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"joseluis244/ProyectoGo/database"
 )
 
-func CalcularPuertos(nombre string) Cliente {
-	var ultimo Cliente
+func CalcularPuertos(nombre string) database.Cliente {
+	var ultimo database.Cliente
 	// Buscamos el último cliente para ver sus puertos
-	res := DB.Order("id desc").First(&ultimo)
+	res := database.DB.Order("id desc").First(&ultimo)
 
 	// Puertos base si es el primer cliente
 	if res.Error != nil {
-		return Cliente{
+		return database.Cliente{
 			Nombre:    nombre,
 			MysqlPort: 3306,
 			MongoPort: 27017,
@@ -26,7 +28,7 @@ func CalcularPuertos(nombre string) Cliente {
 	}
 
 	// Si ya existen clientes, sumamos +1 al último puerto
-	return Cliente{
+	return database.Cliente{
 		Nombre:    nombre,
 		MysqlPort: ultimo.MysqlPort + 1,
 		MongoPort: ultimo.MongoPort + 1,
@@ -35,7 +37,7 @@ func CalcularPuertos(nombre string) Cliente {
 		AppPort:   ultimo.AppPort + 1,
 	}
 }
-func GenerarArchivoCompose(c Cliente) {
+func GenerarArchivoCompose(c database.Cliente) {
 	plantilla, _ := os.ReadFile("compose.template")
 	// if err != nil {
 	// 	return c.Status(500).SendString("No se encontro la plantilla")

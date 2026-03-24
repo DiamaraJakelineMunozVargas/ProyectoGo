@@ -1,6 +1,10 @@
 package webserver
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"joseluis244/ProyectoGo/database"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func CrearCliente(c *fiber.Ctx) error {
 	type EstructuraNombre struct { // solo pedimos el nombre
@@ -11,15 +15,15 @@ func CrearCliente(c *fiber.Ctx) error {
 	if err := c.BodyParser(&ren); err != nil {
 		return c.Status(400).SendString("Error al parsear el body")
 	}
-	var existe Cliente // si ya existe el cliente
-	result := DB.Where("nombre = ?", ren.Nombre).First(&existe)
+	var existe database.Cliente // si ya existe el cliente
+	result := database.DB.Where("nombre = ?", ren.Nombre).First(&existe)
 	if result.Error == nil {
 		return c.Status(400).SendString("Error: Este nombre ya existe")
 	}
 	// calcular puertos
 	nuevoCliente := CalcularPuertos(ren.Nombre)
 	// guardar en la BD
-	if err := DB.Create(&nuevoCliente).Error; err != nil {
+	if err := database.DB.Create(&nuevoCliente).Error; err != nil {
 		return c.Status(500).SendString("Error al guardar cliente")
 	}
 	CrearEntornoCliente(nuevoCliente.Nombre)
@@ -31,9 +35,9 @@ func CrearCliente(c *fiber.Ctx) error {
 }
 
 func Clientes(c *fiber.Ctx) error {
-	var todos []Cliente
+	var todos []database.Cliente
 	// busca todos los registros en la tabla :v
-	DB.Find(&todos)
+	database.DB.Find(&todos)
 	return c.JSON(todos)
 }
 func ControlarDocker(c *fiber.Ctx) error {
