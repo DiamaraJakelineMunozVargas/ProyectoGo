@@ -1,6 +1,7 @@
 package webserver
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -38,10 +39,11 @@ func CalcularPuertos(nombre string) database.Cliente {
 	}
 }
 func GenerarArchivoCompose(c database.Cliente) {
-	plantilla, _ := os.ReadFile("compose.template")
-	// if err != nil {
-	// 	return c.Status(500).SendString("No se encontro la plantilla")
-	// }
+	plantilla, err := os.ReadFile("compose.template")
+	if err != nil {
+		fmt.Println("No se encontro el archivo")
+		return
+	}
 	//lo busca y lo reemplaza
 	nuevoContent := string(plantilla)
 	nuevoContent = strings.ReplaceAll(nuevoContent, "${HOSPITAL_NAME}", c.Nombre)

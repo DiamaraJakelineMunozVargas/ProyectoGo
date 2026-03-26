@@ -26,6 +26,7 @@ func CrearCliente(c *fiber.Ctx) error {
 	if err := database.DB.Create(&nuevoCliente).Error; err != nil {
 		return c.Status(500).SendString("Error al guardar cliente")
 	}
+
 	CrearEntornoCliente(nuevoCliente.Nombre)
 	GenerarArchivoCompose(nuevoCliente)
 	return c.JSON(fiber.Map{
@@ -52,7 +53,7 @@ func ControlarDocker(c *fiber.Ctx) error {
 func VerLog(c *fiber.Ctx) error {
 	nombre := c.Params("nombre")
 	servicio := c.Params("servicio")
-	resultado, err := GestionarDocker(nombre, servicio)
+	resultado, err := GestionarDocker("logs", nombre, servicio)
 	if err != nil {
 		return c.Status(500).SendString("Error al ver el log" + resultado)
 	}
